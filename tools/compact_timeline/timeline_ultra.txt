@@ -1,0 +1,8 @@
+{"type":"directory","format":"id[Full Name | Birth-Death | Faction | Details | Key Relations]","relationsLegend":{"romance":"Romantic partners/spouse","family":"Family members/relatives","personal":"Friends/personal connections"},"characters":[]}
+{"d":"1194-10-02","t":"Whispers of a Black Coach"}
+{"d":"1194-10-03","t":"Tuck's Warning"}
+{"d":"1194-10-06","t":"The Silver Arrows"}
+{"d":"1194-10-09","t":"Ambush at Blidworth Crossing"}
+{"d":"1194-10-14","t":"Marian's Counsel"}
+{"d":"1194-10-19","t":"The Siege of Papplewick Keep"}
+{"d":"1194-10-20","t":"The Ashes of Papplewick"}

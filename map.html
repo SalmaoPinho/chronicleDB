@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Narrative Density</title>
+  <link rel="icon" type="image/png" href="story/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Chakra+Petch:wght@400;500;600&family=Orbitron:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/mr.css">
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    body {
+      background: #0d0d0d;
+      color: #e0e0e0;
+      margin: 0;
+      overflow: hidden;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .map-shell {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      height: 100vh;
+    }
+
+    .map-sidebar {
+      background: #151515;
+      border-right: 1px solid #333;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .map-branding {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .map-logo {
+      width: 40px;
+      height: 40px;
+      filter: drop-shadow(0 0 5px rgba(255,176,77,0.3));
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .map-logo-fallback {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 176, 77, 0.05);
+      border: 1.5px solid rgba(255, 176, 77, 0.2);
+      border-radius: 8px;
+      color: #ffb04d;
+      box-shadow: 0 0 10px rgba(255, 176, 77, 0.1);
+    }
+
+    .map-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      letter-spacing: 1.5px;
+      color: #ffb04d;
+    }
+
+    .map-stats-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .map-stat-item {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      padding: 0.8rem;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+
+    .map-stat-item:hover {
+      background: #252525;
+      border-color: #ffb04d;
+    }
+
+    .map-stat-name {
+      font-weight: 500;
+      color: #eee;
+    }
+
+    .map-stat-count {
+      background: #ffb04d;
+      color: #000;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .map-viewport {
+      position: relative;
+      background: #0a0a0a;
+      overflow: hidden;
+      cursor: grab;
+    }
+
+    .map-viewport:active {
+      cursor: grabbing;
+    }
+
+    #mapWorld {
+      width: 100%;
+      height: 100%;
+      transition: transform 0.1s ease-out;
+    }
+
+    .land {
+      fill: #1a1a1a;
+      stroke: #333;
+      stroke-width: 0.5;
+    }
+
+    .grid-line {
+      stroke: rgba(255, 255, 255, 0.03);
+      stroke-width: 0.5;
+      pointer-events: none;
+    }
+
+    .scanline {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: rgba(255, 176, 77, 0.05);
+      z-index: 10;
+      pointer-events: none;
+      animation: scan 8s linear infinite;
+    }
+
+    @keyframes scan {
+      0% { transform: translateY(-100px); }
+      100% { transform: translateY(100vh); }
+    }
+
+    .heat-circle {
+      fill: rgba(255, 176, 77, 0.4);
+      stroke: #ffb04d;
+      stroke-width: 1;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    .heat-circle:hover {
+      fill: rgba(255, 176, 77, 0.8);
+      stroke-width: 2;
+    }
+
+    .map-tooltip {
+      position: absolute;
+      background: rgba(0,0,0,0.9);
+      border: 1px solid #ffb04d;
+      padding: 0.5rem;
+      pointer-events: none;
+      font-size: 0.8rem;
+      z-index: 100;
+      border-radius: 4px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    .map-controls {
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .map-btn {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      color: #eee;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .map-btn:hover {
+      background: #ffb04d;
+      color: #000;
+      border-color: #ffb04d;
+    }
+
+    .map-status {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      background: rgba(21, 21, 21, 0.8);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      border: 1px solid #333;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="map-shell">
+    <aside class="map-sidebar">
+      <div class="map-branding">
+        <img v-if="storyMetadata?.logo" :src="storyMetadata.logo" class="map-logo" :alt="`${storyMetadata?.title || 'Map'} Logo`">
+        <div v-else class="map-logo-fallback">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+        </div>
+        <div class="map-title">{{ storyMetadata?.title || 'MAPVIEW' }}</div>
+      </div>
+
+      <div class="map-stats-list">
+        <div v-for="(stat, id) in sortedStats" :key="id" class="map-stat-item" @click="focusLocation(id)">
+          <div class="map-stat-name">{{ getDisplayName(id) }}</div>
+          <div class="map-stat-count">{{ stat.count }}</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="map-viewport" ref="viewport" 
+          @mousedown="startDrag" 
+          @mousemove="onDrag" 
+          @mouseup="endDrag"
+          @wheel="handleWheel">
+      
+      <div class="scanline"></div>
+
+      <svg id="mapWorld" viewBox="0 0 1000 500" :style="worldStyle">
+        <!-- Grid -->
+        <g class="grid-group">
+          <line v-for="i in 20" :key="'h'+i" x1="0" :y1="i*25" x2="1000" :y2="i*25" class="grid-line" />
+          <line v-for="i in 40" :key="'v'+i" :x1="i*25" y1="0" :x2="i*25" y2="500" class="grid-line" />
+        </g>
+
+        <!-- Density Map -->
+        <g class="land-group">
+           <path v-for="p in mapPaths" :key="p.id" :d="p.d" class="land" />
+        </g>
+
+        <!-- Density Markers -->
+        <g class="markers-group">
+          <circle v-for="marker in markers" 
+                  :key="marker.id"
+                  :cx="marker.x" 
+                  :cy="marker.y" 
+                  :r="marker.r" 
+                  class="heat-circle"
+                  @mouseenter="showTooltip($event, marker)"
+                  @mouseleave="hideTooltip"
+                  @click="openMasterReference(marker.id)" />
+        </g>
+      </svg>
+
+      <div class="map-status">Narrative Density: Global Coverage</div>
+
+      <div class="map-controls">
+        <button class="map-btn" @click="zoomIn" title="Zoom In"><i data-feather="plus"></i></button>
+        <button class="map-btn" @click="zoomOut" title="Zoom Out"><i data-feather="minus"></i></button>
+        <button class="map-btn" @click="resetView" title="Reset View"><i data-feather="refresh-cw"></i></button>
+      </div>
+
+      <div v-if="tooltip.visible" class="map-tooltip" :style="tooltipStyle">
+        <strong>{{ tooltip.name }}</strong><br>
+        Entries: {{ tooltip.count }}<br>
+        Era: {{ tooltip.eraRange }}
+      </div>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, computed, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const stats = ref({});
+        const entities = ref({});
+        const storyMetadata = ref(null);
+        const transform = ref({ x: 0, y: 0, k: 1 });
+        const isDragging = ref(false);
+        const lastMouse = ref({ x: 0, y: 0 });
+        const tooltip = ref({ visible: false, x: 0, y: 0, name: '', count: 0, eraRange: '' });
+
+        // Standard Mercator-ish mapping: Lat -90 to 90 -> Y 500 to 0, Lon -180 to 180 -> X 0 to 1000
+        const latToY = (lat) => 250 - (lat * 2.77);
+        const lonToX = (lon) => 500 + (lon * 2.77);
+
+        onMounted(async () => {
+          feather.replace();
+          
+          const [statsRes, entitiesRes, metadataRes] = await Promise.all([
+            fetch('story/location_stats.json').then(r => r.json()),
+            fetch('story/entities.json').then(r => r.json()),
+            fetch('story/metadata.json').then(r => r.json()).catch(() => null)
+          ]);
+          
+          stats.value = statsRes;
+          entities.value = entitiesRes;
+          if (metadataRes) {
+            storyMetadata.value = metadataRes;
+            if (metadataRes.title) {
+              document.title = `Global Narrative Density | ${metadataRes.title}`;
+            }
+            if (metadataRes.favicon) {
+              const link = document.querySelector("link[rel~='icon']");
+              if (link) {
+                link.href = metadataRes.favicon;
+              }
+            }
+          }
+        });
+
+        const sortedStats = computed(() => {
+          return Object.entries(stats.value)
+            .sort((a, b) => b[1].count - a[1].count)
+            .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {});
+        });
+
+        const markers = computed(() => {
+          const list = [];
+          const flatEntities = {};
+          
+          Object.values(entities.value).forEach(category => {
+            Object.entries(category).forEach(([id, data]) => {
+              flatEntities[id] = data;
+            });
+          });
+
+          Object.entries(stats.value).forEach(([id, stat]) => {
+            const entity = flatEntities[id];
+            if (entity && entity.coords) {
+              list.push({
+                id,
+                name: entity.name,
+                x: lonToX(entity.coords[1]),
+                y: latToY(entity.coords[0]),
+                r: 4 + Math.sqrt(stat.count) * 1.5,
+                count: stat.count,
+                eraRange: `${stat.minYear} - ${stat.maxYear}`
+              });
+            }
+          });
+          return list;
+        });
+
+        const worldStyle = computed(() => ({
+          transform: `translate(${transform.value.x}px, ${transform.value.y}px) scale(${transform.value.k})`,
+          transformOrigin: '0 0'
+        }));
+
+        const tooltipStyle = computed(() => ({
+          left: `${tooltip.value.x + 15}px`,
+          top: `${tooltip.value.y + 15}px`
+        }));
+
+        const getDisplayName = (id) => {
+          let name = id;
+          Object.values(entities.value).forEach(cat => {
+            if (cat[id]) name = cat[id].name;
+          });
+          return name;
+        };
+
+        const startDrag = (e) => {
+          isDragging.value = true;
+          lastMouse.value = { x: e.clientX, y: e.clientY };
+        };
+
+        const onDrag = (e) => {
+          if (!isDragging.value) return;
+          const dx = e.clientX - lastMouse.value.x;
+          const dy = e.clientY - lastMouse.value.y;
+          transform.value.x += dx;
+          transform.value.y += dy;
+          lastMouse.value = { x: e.clientX, y: e.clientY };
+        };
+
+        const endDrag = () => isDragging.value = false;
+
+        const handleWheel = (e) => {
+          e.preventDefault();
+          const delta = e.deltaY > 0 ? 0.9 : 1.1;
+          const rect = e.currentTarget.getBoundingClientRect();
+          const mouseX = e.clientX - rect.left;
+          const mouseY = e.clientY - rect.top;
+
+          const nextK = Math.max(0.5, Math.min(10, transform.value.k * delta));
+          const ratio = nextK / transform.value.k;
+
+          transform.value.x = mouseX - (mouseX - transform.value.x) * ratio;
+          transform.value.y = mouseY - (mouseY - transform.value.y) * ratio;
+          transform.value.k = nextK;
+        };
+
+        const zoomIn = () => {
+           transform.value.k *= 1.2;
+        };
+        const zoomOut = () => {
+           transform.value.k /= 1.2;
+        };
+        const resetView = () => {
+          transform.value = { x: 0, y: 0, k: 1 };
+        };
+
+        const focusLocation = (id) => {
+          const marker = markers.value.find(m => m.id === id);
+          if (marker) {
+            const viewport = document.querySelector('.map-viewport');
+            const vw = viewport.clientWidth;
+            const vh = viewport.clientHeight;
+            
+            const targetK = 3;
+            transform.value.k = targetK;
+            transform.value.x = (vw / 2) - (marker.x * targetK);
+            transform.value.y = (vh / 2) - (marker.y * targetK);
+          }
+        };
+
+        const showTooltip = (e, marker) => {
+          tooltip.value = {
+            visible: true,
+            x: e.clientX,
+            y: e.clientY,
+            name: marker.name,
+            count: marker.count,
+            eraRange: marker.eraRange
+          };
+        };
+
+        const hideTooltip = () => {
+          tooltip.value.visible = false;
+        };
+
+        const openMasterReference = (id) => {
+           window.open(`mr.html?timeline_tags=${id}`, '_blank');
+        };
+
+        return {
+          stats, sortedStats, markers, transform, worldStyle, 
+          startDrag, onDrag, endDrag, handleWheel,
+          zoomIn, zoomOut, resetView, focusLocation,
+          getDisplayName, showTooltip, hideTooltip, tooltip, tooltipStyle,
+          openMasterReference, storyMetadata,
+          mapPaths: [
+            { id: 'north-america', d: 'M157,112 L172,102 L198,90 L219,85 L240,78 L265,72 L300,72 L330,80 L350,95 L370,115 L380,140 L385,170 L380,200 L370,225 L350,240 L330,245 L310,240 L290,230 L275,215 L260,195 L250,175 L240,165 L225,160 L210,165 L190,175 L175,190 L165,205 L155,225 L145,245 L135,260 L125,270 L115,260 L110,240 L110,220 L115,200 L125,180 L140,160 L150,140 L157,112 Z' },
+            { id: 'south-america', d: 'M302,260 L320,255 L350,255 L380,265 L405,285 L415,310 L410,340 L395,370 L375,405 L355,440 L340,470 L325,485 L315,475 L305,450 L295,420 L290,390 L285,360 L285,330 L290,300 L295,275 L302,260 Z' },
+            { id: 'europe', d: 'M450,100 L470,95 L495,95 L520,105 L545,100 L565,95 L585,105 L600,120 L595,145 L580,165 L560,180 L540,190 L520,195 L500,195 L480,185 L465,170 L455,150 L450,125 L450,100 Z' },
+            { id: 'africa', d: 'M462,198 L490,190 L520,190 L550,200 L580,215 L605,240 L615,270 L610,300 L595,335 L575,375 L555,415 L540,445 L525,460 L510,455 L495,435 L485,410 L475,380 L465,340 L460,300 L460,260 L462,198 Z' },
+            { id: 'asia', d: 'M600,90 L630,85 L670,82 L720,85 L780,95 L840,110 L900,135 L940,170 L955,210 L945,255 L920,290 L880,315 L830,330 L780,335 L730,330 L680,315 L640,290 L615,260 L605,220 L600,180 L600,140 L600,90 Z' },
+            { id: 'australia', d: 'M795,335 L830,325 L870,330 L900,345 L915,370 L910,405 L890,435 L860,455 L825,460 L795,445 L785,420 L785,390 L795,360 L795,335 Z' },
+            { id: 'antarctica', d: 'M200,480 L800,480 L800,495 L200,495 Z' }
+          ]
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

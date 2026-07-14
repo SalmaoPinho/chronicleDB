@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preamble — The Permanent Record</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="styles/mr.css">
+  
+  <style>
+    :root {
+      --preamble-bg: #0b0c0f;
+      --preamble-card: rgba(21, 23, 28, 0.65);
+      --preamble-card-hover: rgba(28, 30, 37, 0.8);
+      --preamble-border: rgba(210, 177, 111, 0.15);
+      --preamble-border-active: rgba(210, 177, 111, 0.4);
+      --preamble-accent: #d2b16f; /* dashboard gold */
+      --preamble-ink: #e5e5ea;
+      --preamble-ink-muted: #9a9ab0;
+      
+      --tier-core-bg: rgba(210, 177, 111, 0.12);
+      --tier-core-border: rgba(210, 177, 111, 0.35);
+      --tier-core-text: #d2b16f;
+      
+      --tier-member-bg: rgba(161, 161, 170, 0.08);
+      --tier-member-border: rgba(161, 161, 170, 0.25);
+      --tier-member-text: #d4d4d8;
+      
+      --tier-orbit-bg: rgba(63, 63, 70, 0.1);
+      --tier-orbit-border: rgba(63, 63, 70, 0.2);
+      --tier-orbit-text: #a1a1aa;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--preamble-bg);
+      color: var(--preamble-ink);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .preamble-layout {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Sticky Header Styling */
+    .preamble-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 12, 15, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1.5px solid var(--preamble-border);
+      padding: 0.85rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .preamble-header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .preamble-back-btn {
+      background: transparent;
+      border: 1.5px solid var(--preamble-border);
+      color: var(--preamble-accent);
+      border-radius: 8px;
+      padding: 0.5rem 0.9rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Outfit', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .preamble-back-btn:hover {
+      border-color: var(--preamble-accent);
+      background: rgba(210, 177, 111, 0.05);
+      transform: translateX(-2px);
+    }
+
+    .preamble-title-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .preamble-title {
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .preamble-title span.year-badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      background: var(--preamble-accent);
+      color: #000000;
+    }
+
+    .preamble-subtitle {
+      font-size: 0.72rem;
+      color: var(--preamble-ink-muted);
+      font-family: 'IBM Plex Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.15rem;
+    }
+
+    .preamble-header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .preamble-year-select {
+      background: rgba(11, 12, 15, 0.9);
+      border: 1.5px solid var(--preamble-border);
+      color: var(--preamble-ink);
+      border-radius: 6px;
+      padding: 0.45rem 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      font-family: 'IBM Plex Mono', monospace;
+      transition: all 0.2s ease;
+    }
+
+    .preamble-year-select:focus {
+      border-color: var(--preamble-accent);
+      box-shadow: 0 0 0 2px rgba(210, 177, 111, 0.1);
+    }
+
+    /* Main Container layout */
+    .preamble-container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+      box-sizing: border-box;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3.5rem;
+    }
+
+    /* Section anchors menu */
+    .preamble-anchors {
+      display: flex;
+      gap: 1rem;
+      border-bottom: 1.5px solid var(--preamble-border);
+      padding-bottom: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .preamble-anchor-link {
+      background: transparent;
+      border: none;
+      color: var(--preamble-ink-muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .preamble-anchor-link:hover {
+      color: var(--preamble-ink);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .preamble-anchor-link.is-active {
+      color: var(--preamble-accent);
+      background: rgba(210, 177, 111, 0.08);
+      border: 1px solid var(--preamble-border);
+    }
+
+    /* Entry Card Frame */
+    .preamble-entry-section {
+      background: var(--preamble-card);
+      border: 1.5px solid var(--preamble-border);
+      border-radius: 12px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: entryFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes entryFadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .preamble-entry-header {
+      padding: 2rem;
+      background: rgba(11, 12, 15, 0.4);
+      border-bottom: 1px solid var(--preamble-border);
+      position: relative;
+    }
+
+    .preamble-eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--preamble-accent);
+      margin-bottom: 0.4rem;
+    }
+
+    .preamble-entry-title {
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .preamble-author-note {
+      font-family: 'Crimson Pro', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--preamble-ink-muted);
+      margin-top: 0.6rem;
+      border-left: 2px solid var(--preamble-accent);
+      padding-left: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .preamble-entry-body {
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    /* Blocks Typographic Styles */
+    .preamble-block-text {
+      font-family: 'Crimson Pro', serif;
+      font-size: 1.25rem;
+      line-height: 1.65;
+      color: var(--preamble-ink);
+      letter-spacing: 0.01em;
+    }
+
+    .preamble-block-text p {
+      margin: 0 0 1.25rem 0;
+    }
+
+    .preamble-block-text p:last-child {
+      margin-bottom: 0;
+    }
+
+    .preamble-block-text br {
+      display: block;
+      content: "";
+      margin-top: 0.75rem;
+    }
+
+    /* Ruled Journal Page Styling for Jess Notes */
+    .preamble-journal-paper {
+      background: #14161a;
+      border: 1.5px solid rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .preamble-journal-paper::before {
+      content: '';
+      position: absolute;
+      left: 2.5rem;
+      top: 0;
+      bottom: 0;
+      width: 1.5px;
+      background: rgba(220, 38, 38, 0.25);
+    }
+
+    .preamble-journal-lines {
+      background-image: linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+      background-size: 100% 2rem;
+      line-height: 2rem;
+      padding-left: 2rem;
+      font-family: 'Crimson Pro', serif;
+      font-size: 1.25rem;
+      color: #e2e8f0;
+    }
+
+    /* Factions Section Cards */
+    .factions-container {
+      display: flex;
+      flex-direction: column;
+      gap: 3.5rem;
+    }
+
+    .faction-card {
+      background: rgba(11, 12, 15, 0.45);
+      border: 1.5px solid var(--preamble-border);
+      border-radius: 12px;
+      padding: 2.25rem;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+      transition: border-color 0.25s ease;
+    }
+
+    .faction-card:hover {
+      border-color: var(--preamble-border-active);
+    }
+
+    .faction-header {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px dashed rgba(210, 177, 111, 0.15);
+      padding-bottom: 1.15rem;
+    }
+
+    .faction-name {
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--preamble-accent);
+      letter-spacing: -0.01em;
+    }
+
+    .faction-aka {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--preamble-ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 0.35rem;
+    }
+
+    .faction-note {
+      font-family: 'Crimson Pro', serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--preamble-ink-muted);
+      background: rgba(210, 177, 111, 0.03);
+      border-left: 2.5px solid var(--preamble-accent);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      line-height: 1.55;
+      margin-bottom: 2.25rem;
+    }
+
+    /* Faction Members Grid */
+    .faction-members-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #ffffff;
+      margin-bottom: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .faction-members-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.15rem;
+    }
+
+    .faction-member-card {
+      background: rgba(21, 23, 28, 0.85);
+      border: 1.2px solid rgba(255, 255, 255, 0.04);
+      border-radius: 10px;
+      padding: 1.15rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      transition: all 0.22s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .faction-member-card:hover {
+      border-color: var(--preamble-border);
+      background: rgba(28, 30, 37, 0.95);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Portrait styling */
+    .member-portrait-frame {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 1.5px solid var(--preamble-border);
+      flex-shrink: 0;
+      background: #111215;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .member-portrait-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .member-portrait-placeholder {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--preamble-accent);
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+    }
+
+    .member-details {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      min-width: 0; /* allows text truncation */
+    }
+
+    .member-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .member-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Tier Badge */
+    .tier-badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .tier-badge.is-core {
+      background: var(--tier-core-bg);
+      border: 1px solid var(--tier-core-border);
+      color: var(--tier-core-text);
+      box-shadow: 0 0 8px rgba(210, 177, 111, 0.08);
+    }
+
+    .tier-badge.is-member {
+      background: var(--tier-member-bg);
+      border: 1px solid var(--tier-member-border);
+      color: var(--tier-member-text);
+    }
+
+    .tier-badge.is-orbit {
+      background: var(--tier-orbit-bg);
+      border: 1px solid var(--tier-orbit-border);
+      color: var(--tier-orbit-text);
+    }
+
+    .member-comment {
+      font-family: 'Crimson Pro', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      line-height: 1.4;
+      color: var(--preamble-ink-muted);
+      margin-top: 0.45rem;
+      word-wrap: break-word;
+    }
+
+    /* Tables block styling */
+    .preamble-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+      text-align: left;
+    }
+
+    .preamble-table th {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--preamble-accent);
+      border-bottom: 2px solid var(--preamble-border);
+      padding: 0.75rem 1rem;
+    }
+
+    .preamble-table td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .preamble-table tr:hover td {
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .preamble-table-label {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      color: #ffffff;
+      width: 250px;
+    }
+
+    .preamble-table-val {
+      color: var(--preamble-ink);
+    }
+
+    /* Error and empty frames */
+    .preamble-empty {
+      padding: 4rem 2rem;
+      text-align: center;
+      background: var(--preamble-card);
+      border: 1.5px dashed var(--preamble-border);
+      border-radius: 12px;
+      color: var(--preamble-ink-muted);
+      font-family: 'Crimson Pro', serif;
+      font-style: italic;
+      font-size: 1.35rem;
+    }
+
+    .preamble-empty span {
+      display: block;
+      margin-top: 0.5rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-style: normal;
+      color: var(--preamble-accent);
+    }
+  </style>
+</head>
+<body>
+
+<div id="preamble-app" class="preamble-layout">
+  
+  <!-- Header bar -->
+  <header class="preamble-header">
+    <div class="preamble-header-left">
+      <button class="preamble-back-btn" @click="navigateBackToDashboard()">
+        <span v-html="featherSvg('arrow-left')"></span>
+        <span>Dashboard</span>
+      </button>
+      <div class="preamble-title-group">
+        <h1 class="preamble-title">
+          <span>Preamble</span>
+          <span class="year-badge">{{ activeYear }}</span>
+        </h1>
+        <div class="preamble-subtitle">Field Notes & Factions Continuity Sheet</div>
+      </div>
+    </div>
+    
+    <div class="preamble-header-right">
+      <select v-model="activeYear" class="preamble-year-select" @change="onYearChanged()">
+        <option value="1955">1955</option>
+        <option value="1962">1962</option>
+        <option value="2008">2008</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <option value="2026">2026</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- Content section -->
+  <div class="preamble-container" v-if="!loading">
+    
+    <!-- Anchors navigation row if there are multiple entries -->
+    <nav class="preamble-anchors" v-if="entries.length > 1">
+      <button v-for="entry in entries" :key="entry.id"
+              class="preamble-anchor-link" :class="{ 'is-active': activeEntryId === entry.id }"
+              @click="activeEntryId = entry.id; scrollToEntry(entry.id)">
+        {{ entry.navLabel || entry.title || entry.id }}
+      </button>
+    </nav>
+    
+    <!-- Empty State -->
+    <div class="preamble-empty" v-if="!entries.length">
+      No Preamble records located for the year {{ activeYear }}.
+      <span>Verify preamble.md files exist in the stories directories.</span>
+    </div>
+
+    <!-- Entries loop -->
+    <div v-else style="display: flex; flex-direction: column; gap: 3rem; width: 100%;">
+      <article v-for="entry in entries" :key="entry.id" :id="'entry-' + entry.id" 
+               class="preamble-entry-section" v-show="activeEntryId === '' || activeEntryId === entry.id">
+        
+        <!-- Entry Header -->
+        <header class="preamble-entry-header">
+          <div class="preamble-eyebrow">{{ entry.eyebrow || 'Preamble Section' }}</div>
+          <h2 class="preamble-entry-title">{{ entry.title || 'Journal entry' }}</h2>
+          <div class="preamble-author-note" v-if="entry.authorNote">
+            {{ entry.authorNote }}
+          </div>
+        </header>
+
+        <!-- Entry Blocks Content -->
+        <div class="preamble-entry-body">
+          <div v-for="(block, bIdx) in entry.blocks" :key="bIdx" class="preamble-block-wrap">
+            
+            <!-- FACTION BLOCK -->
+            <div v-if="block.type === 'faction'" class="factions-container">
+              <div class="faction-card">
+                <header class="faction-header">
+                  <h3 class="faction-name">{{ block.name }}</h3>
+                  <div class="faction-aka" v-if="block.aka">{{ block.aka }}</div>
+                </header>
+
+                <div class="faction-note" v-if="block.note" v-html="marked(block.note)"></div>
+
+                <div class="faction-members-title">
+                  <span v-html="featherSvg('users', 'mr-feather-icon')"></span>
+                  <span>Documented Roster</span>
+                </div>
+
+                <div class="faction-members-grid">
+                  <div v-for="(member, mIdx) in parsedFactionMembers(block.members)" :key="mIdx" class="faction-member-card">
+                    <!-- Avatar Frame -->
+                    <div class="member-portrait-frame">
+                      <img v-if="member.portrait" :src="member.portrait" :alt="member.name" @error="member.portrait = null" />
+                      <div v-else class="member-portrait-placeholder">{{ getInitials(member.name) }}</div>
+                    </div>
+
+                    <!-- Member Details -->
+                    <div class="member-details">
+                      <div class="member-header-row">
+                        <span class="member-name">{{ member.name }}</span>
+                        <span v-if="member.tier" class="tier-badge" :class="'is-' + member.tier">{{ member.tier }}</span>
+                      </div>
+                      <div class="member-comment" v-if="member.comment">{{ member.comment }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TABLE BLOCK -->
+            <table v-else-if="block.type === 'table'" class="preamble-table">
+              <thead>
+                <tr>
+                  <th class="preamble-table-label">Entity / Item</th>
+                  <th class="preamble-table-val">Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(row, rIdx) in block.rows" :key="rIdx">
+                  <td class="preamble-table-label">{{ row.label }}</td>
+                  <td class="preamble-table-val" v-html="marked(row.value)"></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- NOTES / RICH / PARAGRAPH BLOCKS -->
+            <div v-else-if="block.type === 'notes-app' || block.type === 'field-note'" class="preamble-journal-paper">
+              <div class="preamble-journal-lines">
+                <div v-html="block.body || block.content" style="white-space: pre-wrap; line-height: 1.8;"></div>
+              </div>
+            </div>
+
+            <div v-else class="preamble-block-text" v-html="block.body || block.content"></div>
+
+          </div>
+        </div>
+
+      </article>
+    </div>
+
+  </div>
+
+  <!-- Loading frame -->
+  <div class="preamble-container" v-else>
+    <div class="preamble-empty">
+      Retrieving archive dossiers...
+      <span>Loading year continuity data</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Libraries -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="https://unpkg.com/marked/marked.min.js"></script>
+<script src="https://unpkg.com/js-yaml/dist/js-yaml.min.js"></script>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+  data() {
+    return {
+      activeYear: '2026',
+      entries: [],
+      activeEntryId: '',
+      loading: true,
+      
+      // Prefetched databases
+      characterCore: {}
+    };
+  },
+  
+  created() {
+    // 1. Recover year selection from state
+    this.syncActiveYearFromStorage();
+    
+    // 2. Load characters database first to resolve IDs to display names
+    this.fetchDossierDatabases().then(() => {
+      // 3. Load active year preamble Markdown file
+      this.loadPreambleData();
+    });
+  },
+
+  methods: {
+    syncActiveYearFromStorage() {
+      try {
+        const raw = window.localStorage.getItem('mr_vue_state_v1');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          this.activeYear = String(parsed.year || '2026');
+        }
+      } catch (e) {
+        console.warn('Preamble Archive: Local configuration read failed', e);
+      }
+    },
+
+    async fetchDossierDatabases() {
+      try {
+        const coreRes = await fetch('/story/core.json').catch(() => null);
+        if (coreRes && coreRes.ok) {
+          const coreData = await coreRes.json();
+          this.characterCore = coreData.characters || {};
+        }
+      } catch (e) {
+        console.warn('Preamble Archive: Failed to fetch character core dossiers', e);
+      }
+    },
+
+    async loadPreambleData() {
+      this.loading = true;
+      this.entries = [];
+      this.activeEntryId = '';
+      
+      try {
+        const url = `/story/${this.activeYear}/preamble.md`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Preamble file status ${res.status}`);
+        
+        const rawText = await res.text();
+        const parsed = this.parsePreambleMarkdown(rawText);
+        this.entries = parsed;
+        if (parsed.length) {
+          this.activeEntryId = parsed[0].id;
+        }
+      } catch (err) {
+        console.warn(`Preamble: Year ${this.activeYear} preamble file failed to load`, err);
+      } finally {
+        this.loading = false;
+        this.$nextTick(() => {
+          window.feather && window.feather.replace();
+        });
+      }
+    },
+
+    parsePreambleMarkdown(text) {
+      if (typeof jsyaml === 'undefined') {
+        console.warn('Preamble: js-yaml not loaded.');
+        return [];
+      }
+      
+      // Split entries by <!-- entry-break -->
+      const parts = text.split(/<!--\s*entry-break\s*-->/);
+      return parts.map((part, idx) => {
+        const trimmedPart = part.trim();
+        if (!trimmedPart) return null;
+
+        // Match YAML Frontmatter
+        const fmMatch = trimmedPart.match(/^---\s*[\r\n]+([\s\S]*?)[\r\n]+---\s*[\r\n]*/);
+        let meta = {};
+        let content = trimmedPart;
+        
+        if (fmMatch) {
+          try {
+            meta = jsyaml.load(fmMatch[1]);
+            content = trimmedPart.slice(fmMatch[0].length);
+          } catch (e) {
+            console.warn(`Preamble Parser: Frontmatter failure at entry ${idx + 1}`, e);
+          }
+        }
+
+        // Skip stub entries (empty or only HTML comments)
+        if (/^(?:<!--[\s\S]*?-->\s*)*$/.test(content.trim())) {
+          return null;
+        }
+        
+        const blocks = this.parseMarkdownBlocks(content);
+        return { ...meta, blocks };
+      }).filter(entry => entry && entry.id);
+    },
+
+    parseMarkdownBlocks(content) {
+      const blockRegex = /<!--\s*block:\s*([\w\-]+)\s*({.*?})\s*-->/g;
+      const hasExplicitBlocks = /<!--\s*block:[^>]*-->/.test(content);
+      
+      if (!hasExplicitBlocks) {
+        return [{ type: 'text', body: content.trim(), content: content.trim() }];
+      }
+      
+      const blocks = [];
+      let match;
+      const types = [];
+      const propsList = [];
+      const positions = [];
+      
+      while ((match = blockRegex.exec(content)) !== null) {
+        types.push(match[1]);
+        let p = {};
+        try { p = JSON.parse(match[2].replace(/-- >/g, '-->')); } catch (e) { }
+        propsList.push(p);
+        positions.push(match.index + match[0].length);
+      }
+      
+      const firstBlockStart = content.indexOf(content.match(/<!--\s*block:[^>]*-->/)?.[0]);
+      if (firstBlockStart > 0) {
+        const preText = content.slice(0, firstBlockStart).trim();
+        if (preText) {
+          blocks.push({ type: 'text', body: preText, content: preText });
+        }
+      } else if (firstBlockStart === -1 && content.trim()) {
+        return [{ type: 'text', body: content.trim(), content: content.trim() }];
+      }
+      
+      for (let i = 0; i < types.length; i++) {
+        const start = positions[i];
+        let nextBlockMatch = content.slice(start).match(/<!--\s*block:[^>]*-->/);
+        const end = nextBlockMatch ? (start + nextBlockMatch.index) : content.length;
+        const type = types[i];
+        const props = propsList[i];
+        const blockContent = content.slice(start, end).trim();
+        
+        if (type === 'table') {
+          const rows = [];
+          const rowParts = blockContent.split(/^##\s+/m);
+          rowParts.forEach(rp => {
+            if (!rp.trim()) return;
+            const lines = rp.split('\n');
+            const label = lines[0].trim();
+            let value = '';
+            for (let j = 1; j < lines.length; j++) {
+              const line = lines[j].trim();
+              if (line) value += (value ? '<br>' : '') + line;
+            }
+            rows.push({ label, value });
+          });
+          blocks.push({ ...props, type, rows });
+        } else if (type === 'faction' || type === 'list') {
+          const lines = blockContent.split('\n');
+          const bodyLines = [];
+          const members = [];
+          lines.forEach(line => {
+            const memberMatch = line.match(/^- \s+(.*)/);
+            if (memberMatch) {
+              let text = memberMatch[1].trim();
+              const tierMatch = text.match(/\s*<!--\s*tier:\s*(.*?)\s*-->/);
+              let tier = '';
+              if (tierMatch) { tier = tierMatch[1]; text = text.replace(tierMatch[0], '').trim(); }
+              members.push({ text, tier });
+            } else { bodyLines.push(line); }
+          });
+          blocks.push({ ...props, type, body: bodyLines.join('<br>'), note: props.note || '', members });
+        } else {
+          blocks.push({ ...props, type, body: blockContent, content: blockContent });
+        }
+      }
+      return blocks;
+    },
+
+    parsedFactionMembers(membersList) {
+      if (!Array.isArray(membersList)) return [];
+      
+      return membersList.map(member => {
+        const rawText = member.text || '';
+        const tier = member.tier || 'member';
+        
+        // Members are written as: name · comment
+        const dotIndex = rawText.indexOf('·');
+        let name = rawText.trim();
+        let comment = '';
+        
+        if (dotIndex > -1) {
+          name = rawText.slice(0, dotIndex).trim();
+          comment = rawText.slice(dotIndex + 1).trim();
+        }
+        
+        // Resolve character ID to name
+        const resolvedId = name.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+        const core = this.characterCore[resolvedId] || {};
+        const displayName = core['full name'] || core['short name'] || name;
+        
+        // Portraits speculation
+        const portraitUrl = `/portraits/${resolvedId}/${resolvedId}${this.activeYear}.jpg`;
+        
+        return {
+          id: resolvedId,
+          name: displayName,
+          comment: comment,
+          tier: tier.toLowerCase().trim(),
+          portrait: portraitUrl
+        };
+      });
+    },
+
+    getInitials(name) {
+      if (!name) return '??';
+      const parts = name.split(/\s+/).filter(Boolean);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      return name.slice(0, 2).toUpperCase();
+    },
+
+    onYearChanged() {
+      // Sync year back to localStorage so dashboard also reflects the change
+      try {
+        const raw = window.localStorage.getItem('mr_vue_state_v1');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          parsed.year = this.activeYear;
+          window.localStorage.setItem('mr_vue_state_v1', JSON.stringify(parsed));
+        }
+      } catch (e) {
+        console.warn('Preamble Archive: Failed to update local year', e);
+      }
+      
+      // Reload year preamble
+      this.loadPreambleData();
+    },
+
+    navigateBackToDashboard() {
+      window.location.href = '/mr.html';
+    },
+
+    scrollToEntry(entryId) {
+      this.$nextTick(() => {
+        const el = document.getElementById('entry-' + entryId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    },
+
+    marked(text) {
+      if (typeof marked !== 'undefined') {
+        const clean = String(text || '').replace(/<BR\s*\/?>/gi, '\n');
+        return marked.parse(clean);
+      }
+      return text;
+    },
+
+    featherSvg(name, extraClass = '') {
+      if (window.feather) {
+        return window.feather.icons[name]?.toSvg({ class: extraClass }) || '';
+      }
+      return '';
+    }
+  }
+}).mount('#preamble-app');
+</script>
+
+</body>
+</html>

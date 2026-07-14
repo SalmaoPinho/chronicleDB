@@ -1,0 +1,47 @@
+# Legend: id=id, date=date, title=title, characters=characters, tags=tags, body=body, children=children
+# Tag abbreviations: h=history, !=key-event, pg=pangea, pf=pre-flood, o=order, r=roboter, f=fairmount, e=eden, w=watchers, nph=nephilim, lw=long-war, mo=management-operation, c=character, l=location, usa=america, tech=technology, eng=engineering, geo=geopolitics, v=violence, prp=propaganda, hist=historical, mil=militia, su=shadow-unit, rg=ratgirlz, amz=amazon, br=brazil
+
+# --- CHARACTER DIRECTORY ---
+# Format: id[Full Name | Birth-Death | Faction | Details | Key Relations]
+# Relationship Legend:
+# - romance: Romantic partners/spouse
+# - family: Family members/relatives
+# - personal: Friends/personal connections
+
+# ---------------------------
+
+- date: "1194-10-02"
+  title: "Whispers of a Black Coach"
+  tags: ["draft", "mystery", "robin", "sherwood"]
+  body: "Word reached Sherwood of a black coach seen crossing the Nottingham road only at night, its horses never tiring, never n..."
+
+- date: "1194-10-03"
+  title: "Tuck's Warning"
+  tags: ["draft", "lore", "robin", "tuck"]
+  body: "By firelight, Friar Tuck told what he knew. In the Carpathians he had heard monks speak in hushed tones of a *voivode* w..."
+
+- date: "1194-10-06"
+  title: "The Silver Arrows"
+  tags: ["!", "draft", "much", "robin"]
+  body: "Robin sent Much the Miller's Son to every church poor-box and silversmith between Sherwood and Nottingham, trading arrow..."
+
+- date: "1194-10-09"
+  title: "Ambush at Blidworth Crossing"
+  tags: ["!", "draft", "robin", "sherwood"]
+  body: "The black coach came at last, exactly as the villagers described, its wheels silent on the frozen road. Robin's band lay..."
+
+- date: "1194-10-14"
+  title: "Marian's Counsel"
+  tags: ["!", "draft", "marian", "robin"]
+  body: "Maid Marian, hearing of the ambush, rode to Sherwood against Robin's wishes to see him unharmed. She brought news from t..."
+
+- date: "1194-10-19"
+  title: "The Siege of Papplewick Keep"
+  tags: ["!", "draft", "little-john", "marian", "robin", "tuck"]
+  body: "At noon, Robin's band struck the keep at Papplewick. Little John broke the gate with a felled oak trunk while Tuck, cens..."
+
+- date: "1194-10-20"
+  title: "The Ashes of Papplewick"
+  tags: ["draft", "robin", "sherwood"]
+  body: "The morning after, Robin's band returned to the keep to find only ash where the Count had fallen, and the black coach ab..."
+

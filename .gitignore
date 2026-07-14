@@ -1,0 +1,20 @@
+node_modules/
+.env
+.venv/
+.vscode/
+.aider*
+.chainlit/
+*.log
+
+# Storytelling content & custom media folders
+stories/
+portraits/
+pictures/
+archives/
+scratch/
+output_data/
+data/
+sfx/
+# Private story lore guides
+docs/AI_LORE_AND_TONE_GUIDE.md
+docs/CHARACTER_STYLE_GUIDES.md

@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Narrative Brainstorming Workspace</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="styles/mr.css">
+  
+  <style>
+    :root {
+      --chat-bg: #0d0e11;
+      --chat-sidebar: #15161a;
+      --chat-panel: #1b1c21;
+      --chat-border: #2e3037;
+      --chat-accent: #d2b16f; /* dashboard gold */
+      --chat-ink: #e5e5ea;
+      --chat-ink-muted: #9a9ab0;
+      --chat-user-bubble: #282a30;
+      --chat-assistant-bubble: #1b1c21;
+    }
+
+    .chat-action-btn-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.65rem;
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chat-action-btn-pill:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--chat-bg);
+      color: var(--chat-ink);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .chat-layout {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar Styling */
+    .chat-sidebar {
+      width: 320px;
+      background-color: var(--chat-sidebar);
+      border-right: 1.5px solid var(--chat-border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .chat-sidebar-header {
+      padding: 1.5rem;
+      border-bottom: 1.5px solid var(--chat-border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .chat-sidebar-title {
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--chat-accent);
+      letter-spacing: 0.02em;
+    }
+
+    .chat-sidebar-body {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .chat-sidebar-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .chat-sidebar-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--chat-ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .chat-new-btn {
+      width: 100%;
+      background: var(--chat-accent);
+      color: #000000;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(210, 177, 111, 0.15);
+      font-family: 'Outfit', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .chat-new-btn:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(210, 177, 111, 0.25);
+    }
+
+    .chat-persona-select {
+      width: 100%;
+      background: var(--chat-bg);
+      border: 1.5px solid var(--chat-border);
+      color: var(--chat-ink);
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.88rem;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+
+    .chat-persona-select:focus {
+      border-color: var(--chat-accent);
+    }
+
+    .chat-threads-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      max-height: 240px;
+      overflow-y: auto;
+      padding-right: 0.25rem;
+    }
+
+    .chat-thread-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      background: transparent;
+      border: 1.5px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .chat-thread-pill:hover {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .chat-thread-pill.is-active {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--chat-border);
+    }
+
+    .chat-thread-btn {
+      background: none;
+      border: none;
+      color: var(--chat-ink-muted);
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex-grow: 1;
+      padding: 0;
+    }
+
+    .chat-thread-pill.is-active .chat-thread-btn {
+      color: var(--chat-accent);
+      font-weight: 500;
+    }
+
+    .chat-thread-delete-btn {
+      background: none;
+      border: none;
+      color: var(--chat-ink-muted);
+      cursor: pointer;
+      font-size: 0.8rem;
+      opacity: 0.5;
+      padding: 0 0.25rem;
+      transition: opacity 0.2s ease, color 0.2s ease;
+    }
+
+    .chat-thread-delete-btn:hover {
+      opacity: 1;
+      color: #ff4a4a;
+    }
+
+    .chat-sync-panel {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--chat-border);
+      border-radius: 8px;
+      padding: 0.8rem;
+      font-size: 0.78rem;
+      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .chat-sync-status {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 500;
+      color: var(--chat-accent);
+    }
+
+    /* Main Conversation Area */
+    .chat-main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: 100vh;
+      background-color: var(--chat-bg);
+    }
+
+    .chat-main-header {
+      padding: 1rem 2rem;
+      background-color: var(--chat-sidebar);
+      border-bottom: 1.5px solid var(--chat-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .chat-header-agent {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .chat-header-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--chat-border);
+    }
+
+    .chat-header-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin: 0;
+    }
+
+    .chat-header-tagline {
+      font-size: 0.76rem;
+      color: var(--chat-accent);
+      font-family: 'IBM Plex Mono', monospace;
+      margin-top: 0.1rem;
+    }
+
+    .chat-header-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .chat-action-btn {
+      background: transparent;
+      border: 1.5px solid var(--chat-border);
+      color: var(--chat-ink-muted);
+      border-radius: 6px;
+      padding: 0.5rem 0.8rem;
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'IBM Plex Mono', monospace;
+      transition: all 0.2s ease;
+    }
+
+    .chat-action-btn:hover {
+      border-color: var(--chat-accent);
+      color: var(--chat-accent);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Warning Conflict Banner */
+    .chat-warning-banner {
+      background: rgba(239, 68, 68, 0.12);
+      border-bottom: 1px solid rgba(239, 68, 68, 0.25);
+      color: #fca5a5;
+      padding: 0.6rem 2rem;
+      font-size: 0.82rem;
+      line-height: 1.4;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+      animation: bannerSlideIn 0.25s ease;
+    }
+
+    @keyframes bannerSlideIn {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Scrollable Message Frame */
+    .chat-thread-viewport {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 2.5rem 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .chat-thread-container {
+      width: 100%;
+      max-width: 820px;
+      padding: 0 1.5rem;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .chat-message-row {
+      display: flex;
+      gap: 1.25rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .chat-message-row.is-user {
+      justify-content: flex-end;
+    }
+
+    .chat-message-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid var(--chat-border);
+      flex-shrink: 0;
+    }
+
+    .chat-bubble {
+      flex-grow: 1;
+      max-width: 85%;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      box-sizing: border-box;
+      line-height: 1.6;
+      font-size: 0.95rem;
+      letter-spacing: 0.01em;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    .chat-bubble.is-user {
+      background-color: var(--chat-user-bubble);
+      border: 1px solid var(--chat-border);
+      color: #ffffff;
+      border-top-right-radius: 2px;
+    }
+
+    .chat-bubble.is-assistant {
+      background-color: var(--chat-assistant-bubble);
+      border: 1.5px solid var(--chat-border);
+      color: var(--chat-ink);
+      border-top-left-radius: 2px;
+    }
+
+    .chat-message-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.6rem;
+      border-bottom: 1px dashed rgba(255,255,255,0.06);
+      padding-bottom: 0.35rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--chat-ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .chat-meta-name {
+      color: var(--chat-accent);
+      font-weight: 600;
+    }
+
+    .chat-message-body {
+      margin: 0;
+    }
+
+    .chat-message-body p {
+      margin: 0 0 1rem 0;
+    }
+    
+    .chat-message-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Staging YAML Code Card */
+    .chat-code-card {
+      border: 1.5px solid var(--chat-border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #111215;
+      display: flex;
+      flex-direction: column;
+      margin: 1rem 0;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    .chat-code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 1rem;
+      background: #18191d;
+      border-bottom: 1px solid var(--chat-border);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--chat-ink-muted);
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+
+    .chat-code-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .chat-code-btn {
+      background: transparent;
+      border: 1px solid var(--chat-border);
+      color: var(--chat-ink-muted);
+      border-radius: 4px;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.68rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .chat-code-btn:hover {
+      border-color: var(--chat-accent);
+      color: var(--chat-accent);
+    }
+
+    .chat-code-btn.is-primary {
+      background: var(--chat-accent);
+      border-color: var(--chat-accent);
+      color: #000000;
+      font-weight: 600;
+    }
+
+    .chat-code-btn.is-primary:hover {
+      filter: brightness(1.1);
+    }
+
+    .chat-code-pre {
+      margin: 0;
+      padding: 1rem;
+      overflow-x: auto;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.82rem;
+      background: #0f1013;
+      color: #ffffff;
+      line-height: 1.45;
+    }
+
+    /* Typing indicators */
+    .chat-typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      margin-left: 3rem;
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--chat-accent);
+      animation: typingPulse 1.2s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingPulse {
+      0%, 100% { transform: translateY(0); opacity: 0.4; }
+      50% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    /* Chat Input Controls Area */
+    .chat-input-container {
+      width: 100%;
+      max-width: 820px;
+      padding: 0 1.5rem;
+      box-sizing: border-box;
+      margin-bottom: 2rem;
+      flex-shrink: 0;
+    }
+
+    .chat-input-card {
+      background: var(--chat-sidebar);
+      border: 1.5px solid var(--chat-border);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.3);
+    }
+
+    .chat-textarea {
+      width: 100%;
+      height: 52px;
+      min-height: 52px;
+      max-height: 160px;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      resize: none;
+      outline: none;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+
+    .chat-input-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      padding-top: 0.6rem;
+    }
+
+    .chat-input-hints {
+      font-size: 0.75rem;
+      color: var(--chat-ink-muted);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .chat-input-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .chat-auto-speak-btn {
+      background: transparent;
+      border: 1.5px solid var(--chat-border);
+      color: var(--chat-ink-muted);
+      border-radius: 6px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .chat-auto-speak-btn:hover {
+      border-color: var(--chat-accent);
+      color: var(--chat-accent);
+    }
+
+    .chat-auto-speak-btn.is-active {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: #10b981;
+      color: #10b981;
+    }
+
+    .chat-send-btn {
+      background: var(--chat-accent);
+      color: #000000;
+      border: none;
+      border-radius: 6px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(210, 177, 111, 0.1);
+    }
+
+    .chat-send-btn:hover:not([disabled]) {
+      filter: brightness(1.1);
+      transform: translateY(-0.5px);
+    }
+
+    .chat-send-btn[disabled] {
+      background: var(--chat-border);
+      color: var(--chat-ink-muted);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Terminal Console Drawer */
+    .chat-terminal-wrap {
+      background: #090a0d;
+      border: 1.5px solid var(--chat-border);
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      color: #71dbff;
+      max-height: 180px;
+      overflow-y: auto;
+      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.6);
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .chat-terminal-header {
+      font-weight: 600;
+      color: var(--chat-accent);
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed var(--chat-border);
+      padding-bottom: 0.35rem;
+      margin-bottom: 0.25rem;
+      font-size: 0.68rem;
+    }
+  </style>
+</head>
+<body>
+
+<div id="chat-app" class="chat-layout">
+  
+  <!-- Left Sidebar Frame -->
+  <aside class="chat-sidebar">
+    <div class="chat-sidebar-header">
+      <span v-html="featherSvg('message-square', 'mr-feather-icon mr-chat-icon')"></span>
+      <h3 class="chat-sidebar-title">Workspace</h3>
+    </div>
+
+    <div class="chat-sidebar-body">
+      <!-- Session Creator -->
+      <div class="chat-sidebar-section">
+        <button class="chat-new-btn" @click="createNewChat(chatAgent)">
+          <span v-html="featherSvg('plus')"></span>
+          <span>New Chat</span>
+        </button>
+      </div>
+
+      <!-- Co-writer Selection -->
+      <div class="chat-sidebar-section">
+        <label class="chat-sidebar-label">Active Co-Writer</label>
+        <select v-model="chatAgent" class="chat-persona-select" @change="createNewChat(chatAgent)">
+          <option value="jess">Jess (Cynical Co-Writer)</option>
+          <option value="clint">Clint (Vigilante Narrative)</option>
+          <option value="amber">Amber (Observational Lead)</option>
+          <option value="voss">Patricia Voss (Strategic/Corporate)</option>
+        </select>
+      </div>
+
+      <!-- Threads Tracker -->
+      <div class="chat-sidebar-section" style="flex-grow: 1; display: flex; flex-direction: column; overflow: hidden;">
+        <label class="chat-sidebar-label">Brainstorm Threads</label>
+        <div class="chat-threads-list">
+          <div v-for="c in chats" :key="c.id" class="chat-thread-pill" :class="{ 'is-active': c.id === chatActiveId }">
+            <button class="chat-thread-btn" @click="selectChat(c.id)">
+              <span v-html="featherSvg('message-circle', 'mr-feather-icon')"></span>
+              <span v-text="c.title"></span>
+            </button>
+            <button class="chat-thread-delete-btn" @click.stop="deleteChat(c.id)" title="Delete session">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Story Selections Sync Panel -->
+      <div class="chat-sidebar-section">
+        <div class="chat-sync-panel">
+          <div class="chat-sync-status">
+            <span v-html="featherSvg('link', 'mr-feather-icon')"></span>
+            <span>Dashboard Sync</span>
+          </div>
+          <div style="color: var(--chat-ink-muted); font-size: 0.72rem; display: flex; flex-direction: column; gap: 0.25rem;">
+            <span>Timeline Year: <strong style="color: #ffffff;">{{ activeYear || '2026' }}</strong></span>
+            <span>Protagonist: <strong style="color: #ffffff;">{{ characterNameById(storyExportProtagonistId) || storyExportProtagonistId || 'Default' }}</strong></span>
+            <span>Selected Cast: <strong style="color: #ffffff;">{{ storyExportSelectedCharacterIds.length }} characters</strong></span>
+            <span>Active Tag Filters: <strong style="color: #ffffff;">{{ timelineActiveTags.length ? timelineActiveTags.join(', ') : 'None' }}</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Right Main Workspace Frame -->
+  <main class="chat-main">
+    
+    <!-- Active Agent Header -->
+    <header class="chat-main-header" v-if="chats.find(c => c.id === chatActiveId)">
+      <div class="chat-header-agent">
+        <img :src="getChatAgentProfile(chats.find(c => c.id === chatActiveId).agent).avatarPath" class="chat-header-avatar" />
+        <div>
+          <h2 class="chat-header-name" v-text="getChatAgentProfile(chats.find(c => c.id === chatActiveId).agent).label"></h2>
+          <div class="chat-header-tagline" v-text="getChatAgentProfile(chats.find(c => c.id === chatActiveId).agent).tagline"></div>
+        </div>
+      </div>
+
+      <div class="chat-header-actions">
+        <button class="chat-action-btn" @click="clearActiveChatHistory()" title="Clear thread history">
+          <span v-html="featherSvg('trash-2')"></span>
+          <span>Clear history</span>
+        </button>
+        <button class="chat-action-btn" @click="triggerPipelineAndSync()" title="Run timeline sorting and compaction pipeline">
+          <span v-html="featherSvg('refresh-cw')"></span>
+          <span>Sync Pipeline</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Lore Warnings Alert Bar -->
+    <div v-if="chatWarningNotice" class="chat-warning-banner">
+      <span v-html="featherSvg('alert-triangle')"></span>
+      <span v-text="chatWarningNotice"></span>
+    </div>
+
+    <!-- Messages Threads Viewer -->
+    <div class="chat-thread-viewport">
+      <div class="chat-thread-container">
+        
+        <div v-if="chats.find(c => c.id === chatActiveId)" style="display: flex; flex-direction: column; gap: 1.75rem; width: 100%;">
+          <div v-for="(msg, idx) in chats.find(c => c.id === chatActiveId).messages" :key="idx" 
+               class="chat-message-row" :class="{ 'is-user': msg.role === 'user' }">
+            
+            <img v-if="msg.role === 'assistant'" :src="getChatAgentProfile(msg.agentId || 'jess').avatarPath" class="chat-message-avatar" />
+            
+            <div class="chat-bubble" :class="msg.role === 'user' ? 'is-user' : 'is-assistant'" style="position: relative;">
+              <div class="chat-message-meta" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div>
+                  <span class="chat-meta-name" v-text="msg.role === 'user' ? 'You' : getChatAgentProfile(msg.agentId || 'jess').label"></span>
+                  <span style="opacity: 0.6; margin-left: 0.5rem;">{{ new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }).toLowerCase() }}</span>
+                </div>
+                <!-- Action Buttons -->
+                <div v-if="!chatIsBusy && editingMessageIdx !== idx" class="chat-message-actions" style="display: flex; gap: 0.5rem;">
+                  <button class="chat-action-btn-pill" @click="startEditingMessage(idx, msg.content)" title="Edit Message">✏️</button>
+                  <button v-if="msg.role === 'assistant' && idx === chats.find(c => c.id === chatActiveId).messages.length - 1" 
+                          class="chat-action-btn-pill" @click="regenerateLastMessage()" title="Regenerate Answer">🔄</button>
+                </div>
+              </div>
+
+              <!-- Message body (Read-only Mode) -->
+              <div v-if="editingMessageIdx !== idx" class="chat-message-body">
+                <!-- Standard text block -->
+                <p v-if="!msg.content.includes('```yaml') && !msg.content.includes('```')" style="white-space: pre-wrap; margin: 0; line-height: 1.5;" v-text="msg.content"></p>
+                
+                <!-- Mixed content block containing markdown yaml entries -->
+                <div v-else style="display: flex; flex-direction: column; gap: 0.75rem;">
+                  <p v-if="msg.content.split('```')[0].trim()" style="white-space: pre-wrap; margin: 0; line-height: 1.5;">{{ msg.content.split('```')[0].trim() }}</p>
+                  
+                  <div v-if="msg.content.match(/```yaml([\s\S]*?)```/i)" class="chat-code-card">
+                    <div class="chat-code-header">
+                      <span>YAML TIMELINE ENTRY STAGE</span>
+                      <div class="chat-code-actions">
+                        <button class="chat-code-btn" @click="copyTextToClipboard(msg.content.match(/```yaml([\s\S]*?)```/i)[1].trim())">Copy</button>
+                        <button class="chat-code-btn is-primary" @click="appendDraftToStaging(msg.content.match(/```yaml([\s\S]*?)```/i)[1].trim())">Stage Entry</button>
+                      </div>
+                    </div>
+                    <pre class="chat-code-pre"><code>{{ msg.content.match(/```yaml([\s\S]*?)```/i)[1].trim() }}</code></pre>
+                  </div>
+
+                  <p v-if="msg.content.split('```')[2] && msg.content.split('```')[2].trim()" style="white-space: pre-wrap; margin: 0; line-height: 1.5;">{{ msg.content.split('```')[2].trim() }}</p>
+                </div>
+              </div>
+
+              <!-- Message body (Edit Mode) -->
+              <div v-else class="chat-message-body" style="width: 100%;">
+                <textarea v-model="editingMessageContent" class="chat-textarea" style="width: 100%; min-height: 120px; margin-top: 0.5rem; background: rgba(0,0,0,0.35); font-size: 0.9rem; line-height: 1.5; color: #fff; border: 1px solid rgba(255,255,255,0.15); padding: 0.5rem;"></textarea>
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; justify-content: flex-end;">
+                  <button class="chat-code-btn" @click="editingMessageIdx = -1">Cancel</button>
+                  <button class="chat-code-btn is-primary" @click="saveMessageEdit(idx)">Save</button>
+                  <button v-if="msg.role === 'user'" class="chat-code-btn is-primary" style="background: #d84a5a; color: #fff;" @click="saveAndRegenerateMessage(idx)">Save & Regenerate</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Typing indicator -->
+        <div v-if="chatIsBusy && chats.find(c => c.id === chatActiveId).messages.length && chats.find(c => c.id === chatActiveId).messages[chats.find(c => c.id === chatActiveId).messages.length - 1].isStreaming" class="chat-typing-indicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+
+        <!-- Pipeline Log Console -->
+        <div v-if="pipelineLog" class="chat-terminal-wrap">
+          <div class="chat-terminal-header">
+            <span>PIPELINE LOG TERMINAL</span>
+            <button class="chat-code-btn" style="padding: 0 0.25rem; font-size: 0.6rem;" @click="pipelineLog = ''">Clear Console</button>
+          </div>
+          <div style="white-space: pre-wrap; font-family: inherit; color: inherit; line-height: 1.4;">{{ pipelineLog }}</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Chat Bottom Textarea area -->
+    <div class="chat-input-container">
+      <div class="chat-input-card">
+        <textarea v-model="chatInput" class="chat-textarea" 
+                  placeholder="Draft a scene in 2026, brainstorm timeline ideas, or review character lore..."
+                  :disabled="chatIsBusy"
+                  @keydown.enter.prevent="sendChatMessage()"></textarea>
+        
+        <div class="chat-input-footer">
+          <span class="chat-input-hints">Press ENTER to send, SHIFT+ENTER for new lines</span>
+          <div class="chat-input-controls">
+            <button class="chat-auto-speak-btn" :class="{ 'is-active': chatAutoSpeak }" @click="chatAutoSpeak = !chatAutoSpeak" title="Text to Speech Voice Output">
+              <span v-html="featherSvg('volume-2')"></span>
+            </button>
+            <button class="chat-send-btn" :disabled="chatIsBusy || !chatInput.trim()" @click="sendChatMessage()">
+              <span v-html="featherSvg('send')"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Libraries -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+  data() {
+    return {
+      chats: [],
+      chatActiveId: '',
+      chatAgent: 'jess',
+      chatInput: '',
+      chatIsBusy: false,
+      chatAutoSpeak: false,
+      chatWarningNotice: '',
+      
+      // Loaded database states
+      characterCore: {},
+      timelineEvents: [],
+      relationships: [],
+      exportMdText: '',
+      
+      // Messaging edits
+      editingMessageIdx: -1,
+      editingMessageContent: '',
+      
+      // Local sync state
+      activeYear: '2026',
+      storyExportProtagonistId: '',
+      storyExportSelectedCharacterIds: [],
+      timelineActiveTags: [],
+      pipelineLog: '',
+      
+      // Global utilities
+      ProjectMediaUtils: {}
+    };
+  },
+  
+  created() {
+    // 1. Sync selections and filters from parent dashboard's localStorage state
+    this.syncDashboardSelections();
+    
+    // 2. Fetch databases from REST APIs
+    this.fetchDossierDatabases();
+    
+    // 3. Restore chat thread histories
+    this.initializeChatSystem();
+  },
+
+  watch: {
+    chats: {
+      deep: true,
+      handler() {
+        try {
+          window.localStorage.setItem('characterManager.aiChats.v2', JSON.stringify({
+            chats: this.chats,
+            chatActiveId: this.chatActiveId
+          }));
+        } catch(e) {}
+        this.scrollChatToBottom();
+      }
+    },
+    chatActiveId() {
+      this.scrollChatToBottom();
+    }
+  },
+
+  methods: {
+    syncDashboardSelections() {
+      try {
+        const raw = window.localStorage.getItem('mr_vue_state_v1');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          this.activeYear = String(parsed.year || '2026');
+          this.storyExportProtagonistId = parsed.storyExportProtagonistId || '';
+          this.timelineActiveTags = Array.isArray(parsed.timelineActiveTags) ? parsed.timelineActiveTags : [];
+          
+          // Gather selected character IDs
+          const selected = [];
+          if (parsed.storyExportSelections) {
+            Object.keys(parsed.storyExportSelections).forEach(k => {
+              if (parsed.storyExportSelections[k] !== false) {
+                selected.push(k);
+              }
+            });
+          }
+          this.storyExportSelectedCharacterIds = selected;
+        }
+      } catch (e) {
+        console.warn('AI Chat: Failed to load local dashboard configurations', e);
+      }
+    },
+
+    async fetchDossierDatabases() {
+      try {
+        // Fetch core character profiles
+        const coreRes = await fetch('/story/core.json').catch(() => null);
+        if (coreRes && coreRes.ok) {
+          const coreData = await coreRes.json();
+          this.characterCore = coreData.characters || {};
+        }
+        
+        // Fetch chronological timeline events
+        const timelineRes = await fetch('/api/timeline').catch(() => null);
+        if (timelineRes && timelineRes.ok) {
+          this.timelineEvents = await timelineRes.json();
+        }
+
+        // Fetch relationship entries
+        const relationshipsRes = await fetch('/api/relationships').catch(() => null);
+        if (relationshipsRes && relationshipsRes.ok) {
+          this.relationships = await relationshipsRes.json();
+        }
+
+        // Fetch compiled story export (rich character dossiers & perspectives)
+        const exportRes = await fetch('/story/export.md').catch(() => null);
+        if (exportRes && exportRes.ok) {
+          this.exportMdText = await exportRes.text();
+        }
+      } catch (e) {
+        console.warn('AI Chat: Failed to prefetch databases', e);
+      }
+    },
+
+    initializeChatSystem() {
+      try {
+        const stored = window.localStorage.getItem('characterManager.aiChats.v2');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          this.chats = parsed.chats || [];
+          this.chatActiveId = parsed.chatActiveId || '';
+        }
+      } catch (e) {
+        console.warn('AI Chat: Failed to restore history', e);
+      }
+
+      if (!this.chats || !this.chats.length) {
+        this.chats = [{
+          id: 'chat-welcome',
+          title: 'narrative brainstorming',
+          agent: 'jess',
+          messages: [{
+            role: 'assistant',
+            agentId: 'jess',
+            content: 'hey. i\'m jess, your narrative co-writer. let\'s write some Ashford & Fairmount scenes. select characters in the dashboard\'s Export Story drawer, configure active filters, or drop a prompt below to draft entries.',
+            timestamp: Date.now()
+          }]
+        }];
+        this.chatActiveId = 'chat-welcome';
+      }
+      this.$nextTick(() => {
+        this.scrollChatToBottom();
+        window.feather && window.feather.replace();
+      });
+    },
+
+    scrollChatToBottom() {
+      this.$nextTick(() => {
+        const el = document.getElementById('mr-chat-thread');
+        if (el) {
+          el.scrollTop = el.scrollHeight;
+        }
+      });
+    },
+
+    createNewChat(agentId = 'jess') {
+      const p = this.getChatAgentProfile(agentId);
+      const newId = 'chat-' + Date.now();
+      this.chats.push({
+        id: newId,
+        title: `${p.labelLower} session`,
+        agent: agentId,
+        messages: [{
+          role: 'assistant',
+          agentId: agentId,
+          content: agentId === 'jess'
+            ? 'hey. let\'s make some narrative trouble. what are we writing today?'
+            : `Hello. I am ready to co-write from my perspective. Let's begin.`,
+          timestamp: Date.now()
+        }]
+      });
+      this.chatActiveId = newId;
+      this.$nextTick(() => {
+        this.scrollChatToBottom();
+        window.feather && window.feather.replace();
+      });
+    },
+
+    deleteChat(chatId) {
+      this.chats = this.chats.filter(c => c.id !== chatId);
+      if (this.chatActiveId === chatId) {
+        this.chatActiveId = this.chats[0]?.id || '';
+      }
+      if (!this.chats.length) {
+        this.initializeChatSystem();
+      }
+    },
+
+    selectChat(chatId) {
+      this.chatActiveId = chatId;
+      this.$nextTick(() => {
+        this.scrollChatToBottom();
+        window.feather && window.feather.replace();
+      });
+    },
+
+    clearActiveChatHistory() {
+      const active = this.chats.find(c => c.id === this.chatActiveId);
+      if (active) {
+        active.messages = [{
+          role: 'assistant',
+          agentId: active.agent || 'jess',
+          content: active.agent === 'jess' ? 'cleared. let\'s start fresh.' : 'History cleared. Let\'s begin again.',
+          timestamp: Date.now()
+        }];
+        this.$nextTick(() => this.scrollChatToBottom());
+      }
+    },
+
+    getChatAgentProfile(id) {
+      const profiles = {
+        jess: { id: 'jess', label: 'Jess', labelLower: 'jess', avatarPath: 'pictures/life123/pfps/Jesspfp.jpg', voiceMatch: 'Ana', tagline: 'Cynical Co-Writer' },
+        clint: { id: 'clint', label: 'Clint', labelLower: 'clint', avatarPath: 'pictures/life123/pfps/Clintpfp.jpg', voiceMatch: 'Guy', tagline: 'Street Vigilante Insight' },
+        amber: { id: 'amber', label: 'Amber', labelLower: 'amber', avatarPath: 'pictures/life123/pfps/Amberpfp.jpg', voiceMatch: 'Michelle', tagline: 'Observational Analyst' },
+        voss: { id: 'voss', label: 'Voss', labelLower: 'voss', avatarPath: 'pictures/life123/pfps/PatriciaVossPfp.jpg', voiceMatch: 'Aria', tagline: 'Operational Strategist' }
+      };
+      return profiles[id] || profiles.jess;
+    },
+
+    characterNameById(id) {
+      if (!id) return '';
+      const core = this.characterCore || {};
+      const char = core[id.toLowerCase().trim()];
+      return char ? (char['full name'] || char['short name'] || id) : id;
+    },
+
+    startEditingMessage(idx, content) {
+      this.editingMessageIdx = idx;
+      this.editingMessageContent = content;
+    },
+
+    saveMessageEdit(idx) {
+      const active = this.chats.find(c => c.id === this.chatActiveId);
+      if (!active) return;
+      active.messages[idx].content = this.editingMessageContent;
+      this.editingMessageIdx = -1;
+      this.editingMessageContent = '';
+    },
+
+    saveAndRegenerateMessage(idx) {
+      const active = this.chats.find(c => c.id === this.chatActiveId);
+      if (!active) return;
+      active.messages[idx].content = this.editingMessageContent;
+      // Truncate message history after this user message
+      active.messages = active.messages.slice(0, idx + 1);
+      this.editingMessageIdx = -1;
+      this.editingMessageContent = '';
+      this.sendChatMessage();
+    },
+
+    regenerateLastMessage() {
+      if (this.chatIsBusy) return;
+      const active = this.chats.find(c => c.id === this.chatActiveId);
+      if (!active || active.messages.length < 2) return;
+      const lastMsg = active.messages[active.messages.length - 1];
+      if (lastMsg.role === 'assistant') {
+        active.messages.pop();
+        this.sendChatMessage();
+      }
+    },
+
+    extractDossierFromExport(charId) {
+      if (!this.exportMdText) return '';
+      const id = String(charId || '').toLowerCase().trim();
+      const escapedId = id.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+      const regex = new RegExp(`^\\*\\s+(?:Character|Protagonist):\\s+.*\\(${escapedId}\\)\\s*$`, 'im');
+      
+      const lines = this.exportMdText.split('\n');
+      let startIndex = -1;
+      for (let i = 0; i < lines.length; i++) {
+        if (regex.test(lines[i].trim())) {
+          startIndex = i;
+          break;
+        }
+      }
+      
+      if (startIndex === -1) return '';
+      
+      const dossierLines = [];
+      dossierLines.push(lines[startIndex]);
+      for (let i = startIndex + 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.trim().startsWith('* Character:') || line.trim().startsWith('* Protagonist:')) {
+          break;
+        }
+        dossierLines.push(line);
+      }
+      
+      return dossierLines.join('\n').trim();
+    },
+
+    gatherActiveLoreContext(agentId, userText) {
+      const lines = [];
+      const core = this.characterCore || {};
+
+      // 1. Gather synchronised character profiles
+      const selectedIds = [...(this.storyExportSelectedCharacterIds || [])];
+      
+      // Make sure the active agent is included
+      if (agentId && !selectedIds.includes(agentId)) {
+        selectedIds.push(agentId);
+      }
+
+      // Dynamically discover other characters mentioned in the user query
+      if (userText) {
+        const queryLower = userText.toLowerCase();
+        Object.keys(core).forEach(id => {
+          const char = core[id] || {};
+          const lowerId = id.toLowerCase();
+          const shortName = String(char['short name'] || '').toLowerCase();
+          const fullName = String(char['full name'] || '').toLowerCase();
+
+          if (queryLower.includes(lowerId) || 
+              (shortName && queryLower.includes(shortName)) || 
+              (fullName && queryLower.includes(fullName))) {
+            if (!selectedIds.includes(id)) {
+              selectedIds.push(id);
+            }
+            if (char.redirect && !selectedIds.includes(char.redirect)) {
+              selectedIds.push(char.redirect);
+            }
+          }
+        });
+      }
+
+      lines.push('### CHARACTER SHEET DOSSIERS IN FOCUS:');
+      
+      const targets = selectedIds.length ? selectedIds : ['clint', 'jess', 'amber'];
+      if (agentId && !targets.includes(agentId)) {
+        targets.push(agentId);
+      }
+
+      // Track processed canonical IDs to avoid duplicates
+      const processedIds = new Set();
+      let dossierCharCount = 0;
+      const MAX_DOSSIERS_BUDGET = 3500; // Cap total dossier characters to stay safe
+
+      targets.forEach(id => {
+        let charId = id.toLowerCase().trim();
+        let char = core[charId] || {};
+        
+        // Resolve redirect/alias
+        if (char.redirect) {
+          charId = char.redirect.toLowerCase().trim();
+          char = core[charId] || {};
+        }
+
+        if (processedIds.has(charId)) return;
+        processedIds.add(charId);
+
+        const fields = [];
+        fields.push(`ID: ${charId}`);
+        if (char['full name']) fields.push(`Full Name: ${char['full name']}`);
+        if (char['short name']) fields.push(`Short Name: ${char['short name']}`);
+        if (char.gender) fields.push(`Gender: ${char.gender}`);
+        if (char.birthday) fields.push(`Birthday Info: ${char.birthday}`);
+        if (char.birthDate) fields.push(`Birth Date: ${char.birthDate}`);
+        if (char.deathDate) fields.push(`Death Date: ${char.deathDate}`);
+        if (char.hair) fields.push(`Hair: ${char.hair}`);
+        if (char.eyes) fields.push(`Eyes: ${char.eyes}`);
+        if (char.face) fields.push(`Face: ${char.face}`);
+        if (char.appearance) fields.push(`Appearance: ${char.appearance}`);
+        if (char.build) fields.push(`Build: ${char.build}`);
+        if (char.ethnicity) fields.push(`Ethnicity: ${char.ethnicity}`);
+        if (char.groups && char.groups.length) {
+          fields.push(`Groups/Factions: ${char.groups.join(', ')}`);
+        } else if (char.navGroup) {
+          fields.push(`Faction/Group: ${char.navGroup}`);
+        }
+
+        const baseProfile = `- ${fields.join(' | ')}`;
+        
+        // Dynamic export.md rich dossier details (backstory, POV relationships)
+        const richDossier = this.extractDossierFromExport(charId);
+        let dossierBlock = '';
+        if (richDossier) {
+          dossierBlock = `\n[RICH DOSSIER DETAILS & PERSPECTIVES FOR ${charId.toUpperCase()}]:\n${richDossier}\n`;
+        }
+
+        const entryBlock = baseProfile + dossierBlock;
+        if (dossierCharCount + entryBlock.length > MAX_DOSSIERS_BUDGET) {
+          // Budget safety fallback: at least preserve active agent/mentioned character base profile
+          if (charId === agentId || (userText && userText.toLowerCase().includes(charId))) {
+            lines.push(baseProfile);
+            const remainingSpace = MAX_DOSSIERS_BUDGET - dossierCharCount - baseProfile.length;
+            if (remainingSpace > 300 && richDossier) {
+              const truncatedDossier = richDossier.substring(0, remainingSpace - 100) + '... (truncated)';
+              lines.push(`\n[RICH DOSSIER DETAILS FOR ${charId.toUpperCase()} (TRUNCATED)]:\n${truncatedDossier}\n`);
+              dossierCharCount += baseProfile.length + truncatedDossier.length + 100;
+            } else {
+              dossierCharCount += baseProfile.length;
+            }
+          }
+          return;
+        }
+
+        lines.push(entryBlock);
+        dossierCharCount += entryBlock.length;
+      });
+
+      // 2. Load active filtered timeline events (RAG Timeline details)
+      lines.push('\n### HISTORY TIMELINE RECORDS:');
+      const events = Array.isArray(this.timelineEvents) ? this.timelineEvents : [];
+      let currentLength = 0;
+      const MAX_TIMELINE_BUDGET = 3500; // Cap timeline events character budget to stay safe
+
+      for (const ev of events) {
+        const dateStr = ev.date || 'unknown';
+        const titleStr = ev.title || '';
+        const tagsArr = Array.isArray(ev.tags) ? ev.tags : [];
+        const bodyStr = ev.description || ev.content || '';
+
+        // Scoring overlap with selections/tags
+        const matchesTags = tagsArr.some(t => {
+          const tagLower = t.toLowerCase().trim();
+          return targets.some(targetId => {
+            const tgtLower = targetId.toLowerCase().trim();
+            return tagLower === tgtLower || tagLower.includes(tgtLower) || tgtLower.includes(tagLower);
+          });
+        });
+
+        if (matchesTags || dateStr.startsWith(this.activeYear)) {
+          const entryStr = `${dateStr} [${titleStr} | tags: ${tagsArr.join(', ')}] ${bodyStr}`;
+          if (currentLength + entryStr.length > MAX_TIMELINE_BUDGET) {
+            break;
+          }
+          lines.push(entryStr);
+          currentLength += entryStr.length;
+        }
+      }
+
+      return lines.join('\n');
+    },
+
+    checkChatLoreConflicts(query) {
+      const queryLower = String(query || '').toLowerCase();
+      const warnings = [];
+      const loreDirectives = [];
+
+      // 1. Parse year
+      const yearMatches = queryLower.match(/\b(19\d{2}|20\d{2})\b/g) || [];
+      const targetYear = yearMatches.length > 0 ? parseInt(yearMatches[0], 10) : null;
+
+      // 2. Scan core characters
+      const core = this.characterCore || {};
+      const activeIds = new Set();
+
+      Object.keys(core).forEach(id => {
+        const char = core[id] || {};
+        const lowerId = id.toLowerCase();
+        const shortName = String(char['short name'] || '').toLowerCase();
+        const fullName = String(char['full name'] || '').toLowerCase();
+
+        if (queryLower.includes(lowerId) || 
+            (shortName && queryLower.includes(shortName)) || 
+            (fullName && queryLower.includes(fullName))) {
+          activeIds.add(id);
+          const canonicalId = char.redirect || id;
+          activeIds.add(canonicalId);
+        }
+      });
+
+      // 3. Chronology / Death warning
+      Array.from(activeIds).forEach(id => {
+        const char = core[id] || {};
+        if (char.deathDate && targetYear) {
+          const deathYear = parseInt(char.deathDate.split('-')[0], 10);
+          if (targetYear > deathYear) {
+            const charName = char['full name'] || id;
+            warnings.push(`⚠️ Chronology: You set the scene in **${targetYear}** with **${charName}**. However, they died on **${char.deathDate}**.`);
+            loreDirectives.push(`- CHRONOLOGY DIRECTION: The user requested a scene in ${targetYear} involving ${charName} (${id}), but this character is deceased by this year (died on ${char.deathDate}). Ensure the scene operates within this constraint.`);
+          }
+        }
+      });
+
+      // 4. Identity link checking (e.g. Clint is Midnight)
+      Object.keys(core).forEach(aliasId => {
+        const char = core[aliasId] || {};
+        if (char.redirect) {
+          const canonicalTarget = char.redirect;
+          const trimmedAlias = aliasId.trim().toLowerCase();
+          
+          if (queryLower.includes(trimmedAlias)) {
+            Object.keys(core).forEach(otherId => {
+              if (otherId === canonicalTarget || otherId === aliasId) return;
+              const otherChar = core[otherId] || {};
+              if (otherChar.redirect) return;
+
+              const shortName = String(otherChar['short name'] || '').toLowerCase();
+              const fullName = String(otherChar['full name'] || '').toLowerCase();
+
+              const namesToCheck = [otherId];
+              if (shortName) namesToCheck.push(shortName);
+              if (fullName) namesToCheck.push(fullName);
+
+              namesToCheck.forEach(name => {
+                if (queryLower.includes(name.trim().toLowerCase())) {
+                  const linkagePatterns = [
+                    new RegExp(`\\b${name}\\b\\s+(?:is|was|identity\\s+of)\\s+\\b${trimmedAlias}\\b`, 'i'),
+                    new RegExp(`\\b${trimmedAlias}\\b\\s+(?:is|was|identity\\s+of)\\s+\\b${name}\\b`, 'i'),
+                    new RegExp(`realizes?\\s+\\b${name}\\b\\s+is\\s+\\b${trimmedAlias}\\b`, 'i'),
+                    new RegExp(`reveals?\\s+\\b${name}\\b\\s+is\\s+\\b${trimmedAlias}\\b`, 'i')
+                  ];
+
+                  if (linkagePatterns.some(p => p.test(queryLower))) {
+                    const aliasNameUpper = aliasId.charAt(0).toUpperCase() + aliasId.slice(1);
+                    const canonicalName = core[canonicalTarget]?.['full name'] || canonicalTarget;
+                    const otherName = otherChar['full name'] || otherId;
+
+                    warnings.push(`⚠️ Identity Mismatch: You linked **${otherName}** with **${aliasNameUpper}**. In this universe, **${aliasNameUpper}** is canonical alias of **${canonicalName}** (\`${canonicalTarget}\`), whereas **${otherName}** is a separate character.`);
+                    loreDirectives.push(`- LORE CORRECTION: The user implies ${otherName} is ${aliasNameUpper}. This is a lore error. ${aliasNameUpper} is canonical alias of ${canonicalName} (${canonicalTarget}). ${otherName} is a separate character.`);
+                  }
+                }
+              });
+            });
+          }
+        }
+      });
+
+      this.chatWarningNotice = warnings.join(' | ');
+      return loreDirectives;
+    },
+
+    async probeLocalLLM() {
+      const endpoints = [
+        { name: 'LM Studio', url: 'http://localhost:1234/v1' },
+        { name: 'Ollama', url: 'http://localhost:11434/v1' }
+      ];
+      for (const ep of endpoints) {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 400);
+          const res = await fetch(`${ep.url}/models`, { signal: controller.signal, mode: 'cors' }).catch(() => null);
+          clearTimeout(timeout);
+          if (res && res.ok) {
+            return ep;
+          }
+        } catch (e) {}
+      }
+      return endpoints[0]; // Default fallback
+    },
+
+    async sendChatMessage() {
+      if (this.chatIsBusy || !this.chatInput.trim()) return;
+      const userText = this.chatInput;
+      this.chatInput = '';
+
+      const active = this.chats.find(c => c.id === this.chatActiveId);
+      if (!active) return;
+
+      // 1. Append User Bubble
+      active.messages.push({
+        role: 'user',
+        content: userText,
+        timestamp: Date.now()
+      });
+      this.chatIsBusy = true;
+      this.$nextTick(() => this.scrollChatToBottom());
+
+      const agentId = active.agent || 'jess';
+      const agent = this.getChatAgentProfile(agentId);
+
+      // 2. Gather Lore and Warnings
+      const loreContext = this.gatherActiveLoreContext(agentId, userText);
+      const directives = this.checkChatLoreConflicts(userText);
+
+      // 3. System Instructions
+      const worldVibe = "The story balances mundane, suburban high school politics in Ashford with a gritty, street-level vigilante underbelly in the neighboring city of Fairmount. Ashford is quiet, characterized by petty social hierarchies, intense interpersonal observations, and hidden emotional currents. Fairmount is dangerous, home to corrupt institutions, violent crimes, and vigilantes like 'Midnight'. The tone is grounded, psychological, and neo-noir. Actions have heavy consequences, trauma is carried silently, and characters operate on secrets and unsaid truths. Emphasize raw human drama, hidden lives, and complex moral gray areas.";
+      
+      let agentPersonaPrompt = '';
+      if (agentId === 'jess') {
+        agentPersonaPrompt = "You are Jess. Speak directly in the first person ('i', 'me', 'my'). Your tone is highly cynical, sarcastic, sharp, and narrative-focused. You prefer casual, all-lowercase, non-capitalized typing (e.g., 'i don't know, let's just make it sound less like a bad drama'). You balance high school politics with Fairmount's street-level reality, expressing dry amusement or cynical exhaustion. Keep comments brief, direct, and witty.";
+      } else if (agentId === 'clint') {
+        agentPersonaPrompt = "You are Clint. Speak directly in the first person ('I', 'me', 'my'). Your tone is direct, action-oriented, weary, and protective. You are an investigative street vigilante who has seen too much. You are deadpan, brief, blunt, and speak with a dry, dark humor. You hate flowery speech. Get straight to the point.";
+      } else if (agentId === 'amber') {
+        agentPersonaPrompt = "You are Amber. Speak directly in the first person ('I', 'me', 'my'). Your tone is hyper-observant, meticulous, and psychological. You notice subtle shifts, secrets, and micro-expressions that others overlook. Speak with a highly sophisticated, slightly ironic, and dryly clinical perspective. You find humor in analyzing people's hidden motivations.";
+      } else if (agentId === 'voss') {
+        agentPersonaPrompt = "You are Patricia Voss. Speak directly in the first person ('I', 'me', 'my'). Your tone is chillingly formal, cold, strategic, and corporate. You view people and factions as operational assets, leverage, and chess pieces. You use sophisticated, polite, but quietly patronizing words. You have a cold, calculated humor regarding human fallibility.";
+      }
+
+      const systemPrompt = `You are the character ${agent.label} themselves, talking directly with the user.
+
+### TWO-FOLD VOICE RULES (CRITICAL):
+1. CONVERSATIONAL MESSAGES: You must talk directly to the user in the FIRST PERSON ("I", "me", "my" or "i", "me" for Jess) as ${agent.label}. Use your exact character tone, speech style, and personality. Keep conversational responses concise, direct, and infused with the dry, sarcastic, neo-noir humor of this universe.
+2. TIMELINE DRAFTING RULE: Do NOT ramble endlessly about the environment (like dust motes, kettle whistles, or tea-colored light). The prose must be active, grounded, and focused on WHAT ACTUALLY HAPPENS (decisions, events, conversations, physical changes).
+
+### WORLD SETTING:
+${worldVibe}
+
+### YOUR CHARACTER PERSONA DETAILS:
+${agentPersonaPrompt}
+
+### BACKGROUND LORE DOSSIERS & RELATIONSHIPS:
+${loreContext}
+
+---
+
+### INSTRUCTIONS FOR STORY ENTRIES:
+If the user asks to draft a scene, you MUST output the drafted timeline entry in this exact canonical format inside a markdown code block:
+
+\`\`\`yaml
+---
+date: "YYYY-MM-DD" # MANDATORY: You MUST fill this with a real, concrete date (e.g. "1989-09-08"). NEVER use YYYY-MM-DD or any placeholders. If the exact month/day is unknown, choose a logical or random month and day within the target year.
+title: "Drafted Entry Title"
+tags:
+  - "character-tag"
+  - "theme-tag"
+---
+
+Entry body text in THIRD PERSON (even for yourself). 
+- Use immersive, neo-noir, literary prose.
+- CRITICAL: Write about WHAT ACTUALLY HAPPENS. Give the characters concrete actions, dialogue, choices, and event developments that move the plot forward. Do NOT write passive environmental description paragraphs about dust motes, kitchen lights, or kettle noises instead of the plot.
+\`\`\`
+
+Do not add conversational notes inside the code block itself. Keep your outside-the-block banter direct, character-aligned, and witty.
+${directives.length > 0 ? `\n\n### CRITICAL LORE DIRECTIVES:\n${directives.join('\n')}` : ''}`;
+
+      // 4. Probe local server
+      const ep = await this.probeLocalLLM();
+
+      // 5. Build Chat Messages payload
+      const history = active.messages.slice(-8).map(m => ({
+        role: m.role,
+        content: m.content
+      }));
+
+      const payload = {
+        endpointUrl: ep.url,
+        model: 'auto',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...history
+        ],
+        temperature: 0.7,
+        stream: true
+      };
+
+      // 6. Push placeholder for assistant
+      const msgIndex = active.messages.length;
+      active.messages.push({
+        role: 'assistant',
+        agentId: agentId,
+        content: '',
+        timestamp: Date.now(),
+        isStreaming: true,
+        tokenCount: 0
+      });
+      this.$nextTick(() => this.scrollChatToBottom());
+
+      try {
+        const response = await fetch('/api/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let streamedText = '';
+        let tokenCount = 0;
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop(); // Hold partial line
+
+          for (const line of lines) {
+            const l = line.trim();
+            if (l.startsWith('data: ') && l !== 'data: [DONE]') {
+              try {
+                const data = JSON.parse(l.slice(6));
+                const contentChunk = data.choices?.[0]?.delta?.content || '';
+                if (contentChunk) {
+                  streamedText += contentChunk;
+                  tokenCount++;
+                  active.messages[msgIndex].content = streamedText;
+                  active.messages[msgIndex].tokenCount = tokenCount;
+                  this.$nextTick(() => this.scrollChatToBottom());
+                }
+              } catch (e) {}
+            }
+          }
+        }
+
+        active.messages[msgIndex].content = streamedText.trim();
+        active.messages[msgIndex].isStreaming = false;
+
+        // Auto speak
+        if (this.chatAutoSpeak) {
+          this.playChatSpeechAt(active.messages[msgIndex].content, agentId);
+        }
+
+      } catch (err) {
+        console.error(err);
+        active.messages[msgIndex].content = `I hit a bump. Is ${ep.name} running on its local port? Verify your local LLM settings.`;
+        active.messages[msgIndex].isStreaming = false;
+      } finally {
+        this.chatIsBusy = false;
+        this.chatWarningNotice = '';
+        this.$nextTick(() => this.scrollChatToBottom());
+      }
+    },
+
+    async appendDraftToStaging(entryText) {
+      if (!entryText) return;
+      try {
+        let clean = entryText.trim();
+        if (clean.startsWith('```yaml')) {
+          clean = clean.replace(/^```yaml\n/, '').replace(/\n```$/, '');
+        } else if (clean.startsWith('```')) {
+          clean = clean.replace(/^```\n/, '').replace(/\n```$/, '');
+        }
+
+        const res = await fetch('/api/timeline/append-newtimeline', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entry: clean })
+        });
+        const data = await res.json();
+        if (res.ok && data.ok) {
+          alert('Entry successfully appended to stories/earthborn/newtimeline.md!');
+        } else {
+          alert('Staging failed: ' + (data.error || 'Unknown error'));
+        }
+      } catch (e) {
+        console.error(e);
+        alert('Failed to stage entry: ' + e.message);
+      }
+    },
+
+    async triggerPipelineAndSync() {
+      this.chatIsBusy = true;
+      this.pipelineLog = 'Executing pipeline...\n';
+      try {
+        const res = await fetch('/api/timeline/run-pipeline', {
+          method: 'POST'
+        });
+        const data = await res.json();
+        if (res.ok && data.ok) {
+          this.pipelineLog = data.output || 'Pipeline completed successfully!';
+          alert('Pipeline executed successfully!');
+        } else {
+          this.pipelineLog = 'Failed: ' + (data.error || 'Unknown error');
+          alert('Pipeline execution failed!');
+        }
+      } catch (e) {
+        console.error(e);
+        this.pipelineLog = 'Error: ' + e.message;
+        alert('Error triggering pipeline: ' + e.message);
+      } finally {
+        this.chatIsBusy = false;
+      }
+    },
+
+    async copyTextToClipboard(text) {
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        alert('Copied timeline draft to clipboard!');
+      } catch (err) {
+        console.error('Failed to copy text:', err);
+      }
+    },
+
+    playChatSpeechAt(content, agentId) {
+      if (!window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+
+      const cleanText = content.replace(/[*_~`#\[\]]/g, '').replace(/```[\s\S]*?```/g, '');
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      const profile = this.getChatAgentProfile(agentId);
+
+      const voices = window.speechSynthesis.getVoices();
+      let voice = voices.find(v => v.name.includes(profile.voiceMatch));
+
+      if (!voice) {
+        const isMale = (profile.voiceMatch === 'Guy');
+        if (isMale) {
+          voice = voices.find(v => (v.name.includes('Online (Natural)') || v.name.includes('Neural')) && (v.name.includes('Guy') || v.name.includes('Male')));
+        } else {
+          voice = voices.find(v => v.name.includes('en-US-FemaleNeural')) ||
+                  voices.find(v => (v.name.includes('Online (Natural)') || v.name.includes('Neural')) && (v.name.includes('Aria') || v.name.includes('Female')));
+        }
+      }
+
+      if (!voice) {
+        voice = voices.find(v => v.lang.startsWith('en-'));
+      }
+
+      if (voice) utterance.voice = voice;
+      utterance.rate = 1.05;
+      window.speechSynthesis.speak(utterance);
+    },
+
+    featherSvg(name, extraClass = '') {
+      if (window.feather) {
+        return window.feather.icons[name]?.toSvg({ class: extraClass }) || '';
+      }
+      return '';
+    }
+  }
+}).mount('#chat-app');
+</script>
+
+</body>
+</html>

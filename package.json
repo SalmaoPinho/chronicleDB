@@ -1,0 +1,30 @@
+{
+  "name": "the-permanent-record",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local backend utilities for character-manager maintenance tasks.",
+  "scripts": {
+    "dev": "npm run dev:lan",
+    "dev:backend": "npm run dev:free-backend-port && node backend/server.js",
+    "dev:backend:watch": "nodemon --watch backend --watch .env --exec \"node tempscripts/ensure_port_free.js 8787 && node backend/server.js\"",
+    "dev:mr": "browser-sync start --server --files \"mr.html,style.css,styles/**/*.css,scripts/**/*.js,data/**/*.json\" --host 0.0.0.0 --port 8080 --no-open --ui-port 8081",
+    "dev:free-backend-port": "node tempscripts/ensure_port_free.js 8787",
+    "dev:lan": "npm run dev:free-backend-port && concurrently \"npm:dev:backend:watch\" \"npm:dev:mr\"",
+    "secure:encrypt-media": "node tempscripts/encrypt_sensitive_media.js",
+    "build:notebooks": "node tempscripts/compile_notebooks.js",
+    "watch:notebooks": "nodemon --watch story/notebooks -e md --exec \"npm run build:notebooks\""
+  },
+  "dependencies": {
+    "dotenv": "^17.4.0",
+    "express": "^4.21.2",
+    "flatpickr": "^4.6.13",
+    "js-yaml": "^4.1.1",
+    "msedge-tts": "^2.0.5",
+    "three": "^0.183.2"
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.4",
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.14"
+  }
+}
